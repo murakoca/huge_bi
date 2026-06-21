@@ -1,5 +1,14 @@
+# Python bytecode
 __pycache__/
 *.pyc
 *.pyo
-*.db
-.env
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE files (opsiyonel)
+.vscode/
+.idea/
