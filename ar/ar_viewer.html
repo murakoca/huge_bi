@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script>
+        // Veriyi API'den alıp AR sahnesine yerleştir
+        window.onload = function() {
+            fetch('/ar/data')
+                .then(res => res.json())
+                .then(data => {
+                    const entity = document.getElementById('data-text');
+                    entity.setAttribute('value', data.summary);
+                });
+        };
+    </script>
+</head>
+<body style="margin:0; overflow:hidden;">
+    <a-scene embedded arjs>
+        <a-marker preset="hiro">
+            <a-text id="data-text" value="Yükleniyor..." position="0 0 0"
+                    scale="2 2 2" color="black"></a-text>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+</body>
+</html>

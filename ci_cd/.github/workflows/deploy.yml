@@ -1,0 +1,35 @@
+name: Deploy Mini Power BI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build Docker image
+        run: docker build -t mini-powerbi .
+      - name: Push to Registry
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker tag mini-powerbi your-registry/mini-powerbi:${{ github.sha }}
+          docker push your-registry/mini-powerbi:${{ github.sha }}
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker pull your-registry/mini-powerbi:${{ github.sha }}
+            docker stop mini-powerbi || true
+            docker rm mini-powerbi || true
+            docker run -d --name mini-powerbi -p 8050:8050 your-registry/mini-powerbi:${{ github.sha }}

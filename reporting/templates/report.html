@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Sayfalandırılmış Rapor</title></head>
+<body>
+  <h1>Satış Raporu</h1>
+  <table border="1">
+    <tr><th>Ürün</th><th>Satış</th></tr>
+    {% for row in data %}
+    <tr><td>{{ row.Product }}</td><td>{{ row.Sales }}</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
