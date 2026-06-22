@@ -1,6 +1,6 @@
 """
-MEGA BI Pro – Ana Uygulama (Temiz, Çalışan, Profesyonel Arayüz)
-Ollama LLM, Dash CYBORG tema, 15 bölüm modülleri.
+MEGA BI Pro – Profesyonel Dashboard (Çalışan Sürüm)
+Ollama LLM, Dash CYBORG + Özel CSS, Dinamik Veri Kaynakları
 """
 
 import os
@@ -9,7 +9,7 @@ import pandas as pd
 from dash import dcc
 import dash_bootstrap_components as dbc
 
-# TensorFlow gürültüsünü tamamen kapat
+# TensorFlow gürültüsünü kapat
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # --- Flask & Dash -------------------------------------------------------------
@@ -83,16 +83,26 @@ server = Flask(__name__)
 server.config['SECRET_KEY'] = SECRET_KEY
 collab_sio.init_app(server)
 
-# --- Veritabanı ve model --------------------------------------------------------
-conn = SQLConnector('sqlite:///sales.db')
-sales_df = conn.get_data("SELECT * FROM Sales")
-customers_df = conn.get_data("SELECT * FROM Customers")
-secure_sales = apply_rls(sales_df, 'Region', ['EU'])
+# --- Model oluşturma ------------------------------------------------------------
 model = SemanticModel()
-model.load_table('Sales', secure_sales)
-model.load_table('Customers', customers_df)
-model.add_relationship('Sales', 'CustomerID', 'Customers', 'CustomerID')
 
+# Demo veriyi yüklemeyi dene, yoksa boş bir yapı ile devam et
+try:
+    conn = SQLConnector('sqlite:///sales.db')
+    sales_df = conn.get_data("SELECT * FROM Sales")
+    customers_df = conn.get_data("SELECT * FROM Customers")
+    model.load_table('Sales', sales_df)
+    model.load_table('Customers', customers_df)
+    model.add_relationship('Sales', 'CustomerID', 'Customers', 'CustomerID')
+    print("✅ Demo veri yüklendi")
+except Exception as e:
+    print(f"⚠️ Demo veri yüklenemedi: {e}")
+    # Boş bir yapı oluştur ki callback'ler hata vermesin
+    empty_df = pd.DataFrame(columns=['Region', 'Date', 'Sales', 'Product', 'CustomerID'])
+    model.load_table('Sales', empty_df)
+    model.load_table('Customers', empty_df)
+
+# Diğer servislerin başlatılması
 init_xmla(model)
 init_odbc(model)
 init_catalog()
@@ -112,15 +122,7 @@ anomaly_detector = AdvancedAnomalyDetector(method='isolation_forest')
 stream_sio = SocketIO()
 stream_ds = StreamingDataset('live_sales', stream_sio)
 
-# IoT MQTT bağlantısı yok sayılıyor
-# try:
-#     iot_dataset, iot_handler = create_iot_stream(stream_sio)
-#     mqtt_listener = IoTListener("mqtt.eclipseprojects.io", 1883, "fabrika/sensor", iot_handler)
-#     mqtt_listener.start()
-# except Exception as e:
-#     print(f"IoT devre dışı (MQTT): {e}")
-
-# --- Uyarı motoru (arka planda çalışır) ----------------------------------------
+# --- Uyarı motoru ----------------------------------------------------------------
 alert_engine = AlertEngine(model)
 alert_engine.add_alert(
     'dusuk_satis',
@@ -144,12 +146,20 @@ app = dash.Dash(
     __name__,
     server=server,
     url_base_pathname='/dashboard/',
+    assets_folder='assets',                # Özel CSS için
     external_stylesheets=[dbc.themes.CYBORG],
     suppress_callback_exceptions=True,
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
 )
 
-app.layout = create_layout(secure_sales)
+# Layout'u oluştur – veriyi Sales tablosundan al, yoksa boş DataFrame kullan
+try:
+    initial_df = model.query("SELECT * FROM Sales")
+except Exception:
+    initial_df = pd.DataFrame()
+app.layout = create_layout(initial_df)
+
+# Callback'leri bağla
 register_callbacks(app, model, chat_bi, dashboard_designer, text_to_insight)
 
 # --- Flask Blueprint kayıtları --------------------------------------------------
@@ -258,4 +268,4 @@ def gdpr_export():
 
 # --- Ana çalıştırma -------------------------------------------------------------
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8050)
+    app.run_server(debug=True, host='127.0.0.1', port=8050)

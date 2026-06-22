@@ -1,100 +1,106 @@
-"""
-Profesyonel Dashboard Layout'u
-Kenar çubuğu, navbar, KPI kartları, butonlar, sekmeler
-"""
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 
 def create_layout(df):
-    regions = df['Region'].unique()
-    return dbc.Container([
-        # Üst Navbar
-        dbc.NavbarSimple(
-            brand="MEGA BI Pro",
-            brand_href="/dashboard/",
-            color="primary",
-            dark=True,
-            children=[
-                dbc.NavItem(dbc.NavLink("Anasayfa", href="/dashboard/")),
-                dbc.NavItem(dbc.NavLink("Raporlar", href="#")),
-                dbc.NavItem(dbc.NavLink("Ayarlar", href="#")),
-            ]
-        ),
-        html.Br(),
+    return html.Div([
+        # === KENAR ÇUBUĞU ===
+        html.Div([
+            html.H3("MEGA BI Pro"),
+            html.Hr(style={"border-color": "rgba(255,255,255,0.1)"}),
+            dbc.Nav([
+                dbc.NavLink("🏠 Dashboard", href="#", active=True),
+                dbc.NavLink("📊 Raporlar", href="#"),
+                dbc.NavLink("🧠 AI Analiz", href="#"),
+                dbc.NavLink("⚙️ Veri Kaynakları", href="#", id="open-source-modal"),
+                dbc.NavLink("📥 Dışa Aktar", href="#"),
+            ], vertical=True, pills=True),
+        ], className="sidebar"),
 
-        # Ana satır: Kenar Çubuğu + İçerik
-        dbc.Row([
-            # --- Kenar Çubuğu ---
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Kontroller"),
-                    dbc.CardBody([
-                        html.Label("Bölge Seçimi", className="fw-bold"),
-                        dcc.Dropdown(
-                            id='region-filter',
-                            options=[{'label': r, 'value': r} for r in regions],
-                            value=regions[0],
-                            clearable=False
-                        ),
-                        html.Hr(),
-                        html.Label("Tarih Aralığı", className="fw-bold"),
-                        dcc.DatePickerRange(
-                            id='date-range',
-                            start_date=df['Date'].min(),
-                            end_date=df['Date'].max(),
-                            display_format='DD/MM/YYYY'
-                        ),
-                        html.Hr(),
-                        html.Label("Hızlı İşlemler", className="fw-bold"),
-                        dbc.Button("📊 Dashboard Üret", id="btn-generate-dashboard", color="info", className="w-100 mb-2"),
-                        dbc.Button("🧠 AI Sohbet", id="btn-open-chat", color="success", className="w-100 mb-2"),
-                        dbc.Button("🎤 Sesli Komut", id="btn-voice-command", color="warning", className="w-100 mb-2"),
-                        dbc.Button("📥 Rapor İndir", id="btn-download-report", color="primary", className="w-100 mb-2"),
-                        dbc.Button("🔍 Anomali Tespiti", id="btn-anomaly", color="danger", className="w-100"),
-                    ])
-                ], className="shadow-sm")
-            ], width=3, style={"backgroundColor": "#f8f9fa", "padding": "20px"}),
+        # === ANA İÇERİK ===
+        html.Div([
+            # Hero
+            html.Div([
+                html.H1("Merhaba, Murat 👋", style={"color": "#fff", "fontWeight": "700"}),
+                html.P("Veri dünyanın kontrolü sende. Bugünün öne çıkan içgörüleri aşağıda.", 
+                       style={"color": "rgba(255,255,255,0.7)"}),
+            ], style={"marginBottom": "30px"}),
 
-            # --- Ana İçerik ---
-            dbc.Col([
-                # KPI Kartları
-                dbc.Row([
-                    dbc.Col(dbc.Card([dbc.CardHeader("Toplam Satış"), dbc.CardBody(html.H4(id="kpi-sales", className="text-success"))], color="light"), width=3),
-                    dbc.Col(dbc.Card([dbc.CardHeader("Ort. Sipariş"), dbc.CardBody(html.H4(id="kpi-avg", className="text-info"))], color="light"), width=3),
-                    dbc.Col(dbc.Card([dbc.CardHeader("Müşteri Sayısı"), dbc.CardBody(html.H4(id="kpi-customers", className="text-warning"))], color="light"), width=3),
-                    dbc.Col(dbc.Card([dbc.CardHeader("Anomali Sayısı"), dbc.CardBody(html.H4(id="kpi-anomalies", className="text-danger"))], color="light"), width=3),
-                ], className="mb-3"),
+            # KPI Kartları
+            dbc.Row([
+                dbc.Col(html.Div([
+                    html.Div("Toplam Gelir", className="label"),
+                    html.Div(id="kpi-sales", className="value", children="$0"),
+                ], className="kpi-card"), width=3),
+                dbc.Col(html.Div([
+                    html.Div("Aktif Kullanıcı", className="label"),
+                    html.Div(id="kpi-users", className="value", children="0"),
+                ], className="kpi-card"), width=3),
+                dbc.Col(html.Div([
+                    html.Div("Dönüşüm Oranı", className="label"),
+                    html.Div(id="kpi-conversion", className="value", children="%0"),
+                ], className="kpi-card"), width=3),
+                dbc.Col(html.Div([
+                    html.Div("Büyüme", className="label"),
+                    html.Div(id="kpi-growth", className="value", children="%0"),
+                ], className="kpi-card"), width=3),
+            ], className="mb-4"),
 
-                # Sekmeler
-                dbc.Tabs([
-                    dbc.Tab(label="📈 Satış Analizi", tab_id="tab-sales",
-                            children=[dcc.Graph(id='sales-bar'), dcc.Graph(id='sales-line')]),
-                    dbc.Tab(label="🥧 Ürün Dağılımı", tab_id="tab-pie",
-                            children=[dcc.Graph(id='pie-chart')]),
-                    dbc.Tab(label="🧠 AI İçgörüler", tab_id="tab-ai",
-                            children=[html.Div(id="ai-insights-content")]),
-                    dbc.Tab(label="🗺️ Bölgesel Harita", tab_id="tab-map",
-                            children=[dcc.Graph(id='map-chart')]),
-                ], id="main-tabs", active_tab="tab-sales"),
+            # Filtreler
+            dbc.Row([
+                dbc.Col(dcc.Dropdown(id='region-filter', placeholder="Bölge seçin..."), width=3),
+                dbc.Col(dcc.DatePickerRange(id='date-range', display_format='DD/MM/YYYY'), width=4),
+                dbc.Col(dbc.Button("🔄 Yenile", id="btn-refresh", className="btn-premium"), width=2),
+                dbc.Col(dbc.Button("📊 Dashboard Üret", id="btn-generate", className="btn-premium"), width=2),
+                dbc.Col(dbc.Button("🧠 AI Sohbet", id="btn-chat", className="btn-premium"), width=2),
+                dbc.Col(dbc.Button("📥 Rapor İndir", id="btn-download", className="btn-premium"), width=2),
+            ], className="mb-4"),
 
-                # Chat / Voice gizli modal
-                dbc.Modal([
-                    dbc.ModalHeader("AI Sohbet Asistanı"),
-                    dbc.ModalBody([
-                        dcc.Input(id="chat-input", type="text", placeholder="Sorunuzu yazın...", className="w-100"),
-                        html.Div(id="chat-response", className="mt-3")
+            # Grafikler
+            dbc.Row([
+                dbc.Col(html.Div(dcc.Graph(id='sales-bar', config={'displayModeBar': False}), className="graph-container"), width=6),
+                dbc.Col(html.Div(dcc.Graph(id='sales-line', config={'displayModeBar': False}), className="graph-container"), width=6),
+            ]),
+
+            # AI İçgörü alanı
+            html.Div(id="ai-insights-content", className="mt-3"),
+
+        ], className="main-content"),
+
+        # === MODAL: Veri Kaynağı Bağlantısı ===
+        dbc.Modal([
+            dbc.ModalHeader("Veri Kaynağı Bağlantısı"),
+            dbc.ModalBody([
+                dcc.Tabs([
+                    dcc.Tab(label='📁 Dosya', children=[
+                        dcc.Upload(id='upload-file', children=html.Div('Dosyayı sürükleyin veya tıklayın'),
+                                   style={'border': '2px dashed rgba(255,255,255,0.3)', 'borderRadius': '15px', 'padding': '30px', 'textAlign': 'center'}),
+                        html.Div(id='file-info')
                     ]),
-                    dbc.ModalFooter(dbc.Button("Kapat", id="close-chat", className="ms-auto"))
-                ], id="chat-modal", is_open=False),
+                    dcc.Tab(label='🗄️ Veritabanı', children=[
+                        dcc.Input(id='db-connection-string', type='text', placeholder='postgresql://user:pass@localhost/db', className="w-100 mb-2"),
+                        dcc.Textarea(id='db-query', placeholder='SELECT * FROM tablo', rows=3)
+                    ]),
+                    dcc.Tab(label='🌐 API', children=[
+                        dcc.Input(id='api-url', type='text', placeholder='https://api.example.com/data', className="w-100 mb-2"),
+                        dcc.Input(id='api-token', type='password', placeholder='Bearer token', className="w-100")
+                    ]),
+                ]),
+                html.Div(id='connection-status', className="mt-3 text-center")
+            ]),
+            dbc.ModalFooter(dbc.Button("Bağlan", id="btn-connect-source", className="btn-premium")),
+        ], id="source-modal", is_open=False, size="lg"),
 
-                dbc.Modal([
-                    dbc.ModalHeader("Sesli Komut"),
-                    dbc.ModalBody("Mikrofon dinleniyor..."),
-                    dbc.ModalFooter(dbc.Button("Kapat", id="close-voice", className="ms-auto"))
-                ], id="voice-modal", is_open=False),
-            ], width=9)
-        ]),
+        # === MODAL: AI Sohbet ===
+        dbc.Modal([
+            dbc.ModalHeader("AI Sohbet Asistanı"),
+            dbc.ModalBody([
+                dcc.Input(id="chat-input", type="text", placeholder="Sorunuzu yazın...", className="w-100"),
+                html.Div(id="chat-response", className="mt-3")
+            ]),
+            dbc.ModalFooter(dbc.Button("Kapat", id="close-chat", className="ms-auto"))
+        ], id="chat-modal", is_open=False),
 
-        # Gizli Div'ler (download vb.)
+        # Gizli depolar
+        dcc.Store(id='data-source-store', storage_type='memory', data={'table': 'Sales_with_Customers'}),
         dcc.Download(id="download-report"),
-    ], fluid=True)
+    ])
