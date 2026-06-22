@@ -1,7 +1,7 @@
 # MEGA BI Pro
 
-**Enterprise Business Intelligence & Analytics Platform**  
-An open‑source, Power BI‑inspired solution featuring 150+ connectors, Power Query transformations, a DAX engine, AI, AR/VR, IoT, and much more.
+**Next‑Generation Business Intelligence & Analytics Platform**  
+An open‑source, enterprise‑grade solution featuring extensive data connectivity, advanced transformations, a powerful calculation engine, AI‑driven insights, and immersive AR/VR experiences.
 
 ![Python](https://img.shields.io/badge/python-3.10-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -10,28 +10,28 @@ An open‑source, Power BI‑inspired solution featuring 150+ connectors, Power 
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
 | Category | Details |
 |----------|----------|
-| **Data Connectivity** | SQL Server, SQLite, Excel, CSV, REST API, SharePoint, Google Analytics, Salesforce, BigQuery, Parquet |
-| **Transformations (Power Query)** | Split columns, filtering, merging, pivot/unpivot, data type changes |
-| **Modeling** | Star schema, DuckDB in‑memory analytical database |
-| **DAX Engine** | CALCULATE, SUMX, RANKX, time intelligence, 50+ functions |
-| **Visualizations** | Interactive bar, line, pie, KPI, decomposition tree, maps via Plotly/Dash |
-| **Artificial Intelligence** | LLM‑based ChatBI (Ollama), automated report writing, anomaly detection, chart recommendations |
-| **Collaboration** | WebSocket co‑editing, comments, multi‑user support |
-| **Security** | Row‑level security (RLS), ABAC, RBAC, Azure AD (optional) |
-| **Mobile & AR/VR** | PWA support, KivyMD mobile app, WebXR augmented reality |
-| **IoT & Streaming** | MQTT broker for live data streams, real‑time dashboards |
+| **Data Connectivity** | SQL Server, SQLite, Excel, CSV, REST API, SharePoint, Google Analytics, Salesforce, BigQuery, Parquet, and more |
+| **Data Transformation** | Split, filter, merge, pivot/unpivot, type casting – inspired by modern ETL tools |
+| **Semantic Modeling** | Star schema support, DuckDB in‑memory analytics engine |
+| **Calculation Engine** | Advanced formulas including time intelligence, window functions, and over 50 statistical/logical functions |
+| **Visualizations** | Interactive bar, line, pie, KPI, decomposition tree, heatmaps, and custom Plotly/Dash charts |
+| **Artificial Intelligence** | LLM‑powered chatbot (Ollama), automated narrative generation, anomaly detection, smart chart recommendations |
+| **Collaboration** | Real‑time co‑editing via WebSocket, threaded comments, multi‑user workspaces |
+| **Security** | Row‑level security (RLS), attribute‑based access control (ABAC), role‑based access control (RBAC), optional Azure AD integration |
+| **Mobile & Immersive** | Progressive Web App (PWA), KivyMD native mobile app, WebXR augmented reality viewer |
+| **IoT & Real‑time** | MQTT ingestion, live streaming dashboards |
 | **Deployment** | Docker, Kubernetes, GitHub Actions CI/CD |
-| **Additional Capabilities** | Data catalog, data lineage, federated learning, quantum optimisation, synthetic data generation, carbon footprint calculator |
+| **Advanced Analytics** | Data catalog & lineage, federated learning, quantum optimisation (Qiskit), synthetic data generation, sustainability metrics |
 
 ---
 
 ## 📦 Installation
 
 1. **Clone the repository:**
-```bash
-git clone https://github.com/onlyashremains-oss/huge_bi.git
-cd huge_bi
+   ```bash
+   git clone https://github.com/murakoca/huge_bi.git
+   cd huge_bi
